@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "headpoints",
+  "version": "${version}",
+  "name": "Headpoints",
+  "description": "Head components for player waypoints",
+  "authors": [ "Lukiiy" ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/headpoints/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "me.lukiiy.headpoints.Headpoints"
+    ]
+  },
+  "mixins": [
+    "headpoints.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": ">=${minecraft_version}"
+  }
+}
