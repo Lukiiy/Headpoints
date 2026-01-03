@@ -3,9 +3,12 @@
   "id": "headpoints",
   "version": "${version}",
   "name": "Headpoints",
-  "description": "Head components for player waypoints",
+  "description": "Renders player heads for their waypoints!",
   "authors": [ "Lukiiy" ],
-  "contact": {},
+  "contact": {
+    "sources": "https://github.com/Lukiiy/Headpoints",
+    "issues": "https://github.com/Lukiiy/Headpoints/issues"
+  },
   "license": "MIT",
   "icon": "assets/headpoints/icon.png",
   "environment": "client",
