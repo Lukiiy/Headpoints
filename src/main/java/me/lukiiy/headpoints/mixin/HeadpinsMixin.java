@@ -9,7 +9,7 @@ import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.resources.WaypointStyle;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
@@ -32,8 +32,8 @@ import java.util.UUID;
 public class HeadpinsMixin {
     @Shadow @Final private Minecraft minecraft;
 
-    @Redirect(method = "method_70870", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIII)V"))
-    private void headpoints$pins(GuiGraphics instance, RenderPipeline renderPipeline, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, Entity entity, Level level, PartialTickSupplier pts, GuiGraphics instance2, int o, TrackedWaypoint t) {
+    @Redirect(method = "method_70870", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"))
+    private void headpoints$pins(GuiGraphics instance, RenderPipeline renderPipeline, Identifier identifier, int i, int j, int k, int l, int m, Entity entity, Level level, PartialTickSupplier pts, GuiGraphics instance2, int o, TrackedWaypoint t) {
         UUID id = t.id().left().orElse(null);
 
         PlayerSkin skin = null;
@@ -61,11 +61,11 @@ public class HeadpinsMixin {
         }
 
         if (skin == null) {
-            instance.blitSprite(renderPipeline, resourceLocation, i, j, k, l, m);
+            instance.blitSprite(renderPipeline, identifier, i, j, k, l, m);
             return;
         }
 
-        float dist = Mth.sqrt((float) t.distanceSquared(minecraft.getCameraEntity()));
+        float dist = minecraft.getCameraEntity() != null ? Mth.sqrt((float) t.distanceSquared(minecraft.getCameraEntity())) : 10; // TODO
         int scale = Mth.ceil(8 * headpoints$scale(dist, minecraft.getWaypointStyles().get(t.icon().style)));
         int renderX = (i + 4) - scale / 2;
         int renderY = (j + 4) - scale / 2;
