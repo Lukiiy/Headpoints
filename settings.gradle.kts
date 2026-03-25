@@ -10,4 +10,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "XDBar"
+rootProject.name = "Headpoints"

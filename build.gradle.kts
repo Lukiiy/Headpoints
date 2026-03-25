@@ -5,9 +5,9 @@ plugins {
 version = rootProject.property("mod_version")!!
 group = rootProject.property("maven_group")!!
 
-base {
-    archivesName = providers.gradleProperty("archives_base_name")
-}
+val id = "headpoints"
+
+base.archivesName.set(id)
 
 repositories {
     maven("https://maven.terraformersmc.com/")
@@ -25,7 +25,7 @@ dependencies {
 
 loom {
     mods {
-        register("xdbar") {
+        register(id) {
             sourceSet(sourceSets.main.get())
         }
     }
