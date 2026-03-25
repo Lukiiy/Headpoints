@@ -1,10 +1,13 @@
 package me.lukiiy.headpoints.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarEntity;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.contextualbar.LocatorBarRenderer;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -32,9 +35,15 @@ import java.util.UUID;
 public class HeadpinsMixin {
     @Shadow @Final private Minecraft minecraft;
 
-    @Redirect(method = "method_70870", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"))
-    private void headpoints$pins(GuiGraphics instance, RenderPipeline renderPipeline, Identifier identifier, int i, int j, int k, int l, int m, Entity entity, Level level, PartialTickSupplier pts, GuiGraphics instance2, int o, TrackedWaypoint t) {
-        UUID id = t.id().left().orElse(null);
+    @WrapOperation(
+            method = "lambda$extractRenderState$1",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"
+            )
+    )
+    private void headpoints$pins(GuiGraphicsExtractor instance, RenderPipeline tile, Identifier nineSlice, int i, int renderPipeline, int location, int x, int y, Operation<Void> original, @Local(argsOnly = true) TrackedWaypoint waypoint) {
+        UUID id = waypoint.id().left().orElse(null);
 
         PlayerSkin skin = null;
         boolean hat = true;
@@ -56,21 +65,22 @@ public class HeadpinsMixin {
                 upsideDown = AvatarRenderer.isPlayerUpsideDown(player);
             } else if (skin == null && e instanceof ClientAvatarEntity clientAvatar) {
                 skin = clientAvatar.getSkin();
+
                 if (clientAvatar instanceof Avatar avatar) hat = avatar.isModelPartShown(PlayerModelPart.HAT);
             }
         }
 
         if (skin == null) {
-            instance.blitSprite(renderPipeline, identifier, i, j, k, l, m);
+            original.call(instance, tile, nineSlice, i, renderPipeline, location, x, y);
             return;
         }
 
-        float dist = minecraft.getCameraEntity() != null ? Mth.sqrt((float) t.distanceSquared(minecraft.getCameraEntity())) : 10; // TODO
-        int scale = Mth.ceil(8 * headpoints$scale(dist, minecraft.getWaypointStyles().get(t.icon().style)));
+        float dist = minecraft.getCameraEntity() != null ? Mth.sqrt((float) waypoint.distanceSquared(minecraft.getCameraEntity())) : 10; // TODO
+        int scale = Mth.ceil(8 * headpoints$scale(dist, minecraft.getWaypointStyles().get(waypoint.icon().style)));
         int renderX = (i + 4) - scale / 2;
-        int renderY = (j + 4) - scale / 2;
+        int renderY = (renderPipeline + 4) - scale / 2;
 
-        PlayerFaceRenderer.draw(instance, skin.body().texturePath(), renderX, renderY, scale, hat, upsideDown, -1);
+        PlayerFaceExtractor.extractRenderState(instance, skin.body().texturePath(), renderX, renderY, scale, hat, upsideDown, -1);
     }
 
     @Unique
