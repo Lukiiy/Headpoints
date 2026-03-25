@@ -19,15 +19,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.entity.player.PlayerSkin;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.waypoints.PartialTickSupplier;
 import net.minecraft.world.waypoints.TrackedWaypoint;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.UUID;
 
@@ -35,13 +32,7 @@ import java.util.UUID;
 public class HeadpinsMixin {
     @Shadow @Final private Minecraft minecraft;
 
-    @WrapOperation(
-            method = "lambda$extractRenderState$1",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"
-            )
-    )
+    @WrapOperation(method = "lambda$extractRenderState$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIII)V"))
     private void headpoints$pins(GuiGraphicsExtractor instance, RenderPipeline tile, Identifier nineSlice, int i, int renderPipeline, int location, int x, int y, Operation<Void> original, @Local(argsOnly = true) TrackedWaypoint waypoint) {
         UUID id = waypoint.id().left().orElse(null);
 
